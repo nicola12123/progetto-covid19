@@ -63,3 +63,38 @@ grafico = crea_grafico_linee(dati_pd, variabile, paese_selezionato)
 
 # Mostro il grafico
 st.altair_chart(grafico, use_container_width=True)
+
+
+
+
+
+# Mappa percentuale vaccinati
+
+st.write("### Mappa globale - Percentuale popolazione vaccinata")
+
+# Calcolo percentuale vaccinati
+dati_completi = carica_e_pulisci_dati().join(
+    pl.read_csv("data/owid-covid-data.csv").select(["location", "population"]).unique(),
+    on="location",
+    how="left"
+)
+
+dati_percentuale = (
+    dati_completi.group_by("location")
+    .agg(
+        pl.col("people_vaccinated").max().alias("people_vaccinati"),
+        pl.col("population").max().alias("population")
+    )
+    .with_columns(
+        (pl.col("people_vaccinati") / pl.col("population") * 100).alias("percentuale_vaccinati")
+    )
+    .select(["location", "percentuale_vaccinati"])
+    .to_pandas()
+)
+
+# Creo e mostro la mappa
+from visualizations import crea_mappa_percentuale, add_map
+
+mappa = crea_mappa_percentuale(dati_percentuale)
+add_map(mappa)
+

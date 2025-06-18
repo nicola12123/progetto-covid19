@@ -22,7 +22,7 @@ def carica_e_pulisci_dati():
         pl.col("people_vaccinated").cast(pl.Float64, strict=False),
         pl.col("people_fully_vaccinated").cast(pl.Float64, strict=False)
     )
-
+    
     # Rimuovo righe con valori null su location o date
     df = df.filter(pl.col("location").is_not_null() & pl.col("date").is_not_null())
 
