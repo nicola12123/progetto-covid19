@@ -2,6 +2,25 @@ import altair as alt
 import geopandas as gpd
 import streamlit as st
 
+def crea_grafico_linee(df, colonna_y, nome_paese):
+    grafico = (
+        alt.Chart(df)
+        .mark_line()
+        .encode(
+            x=alt.X("date:T", title="Data"),
+            y=alt.Y(f"{colonna_y}:Q", title=colonna_y.replace("_", " ").capitalize()),
+            tooltip=["date", colonna_y]
+        )
+        .properties(
+            title=f"{colonna_y.replace('_', ' ').capitalize()} in {nome_paese}",
+            width=700,
+            height=400
+        )
+    )
+    return grafico
+
+
+
 # Carico la geografia del mondo (come nel laboratorio mappe)
 @st.cache_data
 def carica_mondo():
